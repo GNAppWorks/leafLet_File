@@ -18,20 +18,6 @@ $.getScript("http://apps.esrgc.org/maps/seagullcentury/route0.js",
 	}
 );
 
-// load route from server
-$.getScript("http://apps.esrgc.org/maps/seagullcentury/route1.js", 
-	function(){
-		L.geoJson(route).addTo(map);
-	}
-);
-
-// load route from server
-$.getScript("http://apps.esrgc.org/maps/seagullcentury/route2.js", 
-	function(){
-		L.geoJson(route).addTo(map);
-	}
-);
-
 //replaces setView method and sets to detected location
 map.locate({
 	setView: true,
