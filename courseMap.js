@@ -12,21 +12,21 @@ var url = 'http://a.tile.openstreetmap.org/{z}/{x}/{y}.png';
 L.tileLayer(url, {maxZoom: 18}).addTo(map);
 
 // load route from server
-$.getScript("http://apps.esrgc.org/maps/foodshed/data/route0.js", 
+$.getScript("http://apps.esrgc.org/maps/seagullcentury/route0.js", 
 	function(){
 		L.geoJson(route).addTo(map);
 	}
 );
 
 // load route from server
-$.getScript("http://apps.esrgc.org/maps/foodshed/data/route1.js", 
+$.getScript("http://apps.esrgc.org/maps/seagullcentury/route1.js", 
 	function(){
 		L.geoJson(route).addTo(map);
 	}
 );
 
 // load route from server
-$.getScript("http://apps.esrgc.org/maps/foodshed/data/route2.js", 
+$.getScript("http://apps.esrgc.org/maps/seagullcentury/route2.js", 
 	function(){
 		L.geoJson(route).addTo(map);
 	}
