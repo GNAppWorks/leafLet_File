@@ -58,5 +58,3 @@ function getUrlVars()
     }
     return vars;
 }
-
-map.addControl( new L.Control.Gps());

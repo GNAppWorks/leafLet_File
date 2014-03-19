@@ -1,0 +1,39 @@
+
+var target = UIATarget.localTarget();
+// speed is in meters/sec  
+ var points = [  
+                 {location:{latitude:38.345224,longitude:-75.605764}},  
+                 ];
+
+ for (var i = 0; i < points.length; i++)  
+ {  
+      target.setLocationWithOptions(points[i].location);  
+      target.delay(10.0);  
+ }
+
+
+// speed is in meters/sec  
+ var points = [
+			   {location:{latitude: 38.348323,longitude:-75.599468}},
+			   {location:{latitude: 38.348303,longitude:-75.599295}},  
+               {location:{latitude: 38.348279,longitude:-75.599115}},
+			   {location:{latitude: 38.348248,longitude:-75.598829}},  
+               {location:{latitude: 38.348216,longitude:-75.598604}},  
+               {location:{latitude: 38.348179,longitude:-75.598386}},  
+               {location:{latitude: 38.348139,longitude:-75.598163}},  
+               {location:{latitude: 38.348106,longitude:-75.597998}},
+               {location:{latitude: 38.348077,longitude:-75.597855}},
+			   {location:{latitude: 38.348077,longitude:-75.597855}},
+			   {location:{latitude: 38.347916,longitude:-75.597865}},
+			   {locaiton:{latitude: 38.347765,longitude:-75.597894}},
+			   ];
+
+ for (var i = 0; i < points.length; i++)  
+ {  
+      target.setLocationWithOptions(points[i].location);  
+      //target.captureScreenWithName(i+"_.png");  
+      target.delay(2.0);  
+ }  
+	/*		   
+[ -75.597945, 38.347543 ], [ -75.597998, 38.347377 ], [ -75.598048, 38.347212 ], [ -75.598104, 38.347027 ], [ -75.598159, 38.346845 ], [ -75.598201, 38.346716 ], [ -75.598261, 38.346559 ], [ -75.598330, 38.346376 ], [ -75.598381, 38.346236 ]
+	 */
