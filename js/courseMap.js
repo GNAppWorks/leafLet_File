@@ -13,6 +13,8 @@ L.tileLayer(url, {maxZoom: 15}).addTo(map);
 
 var route = getUrlVars()["route"];
 
+var routeGeoJSON;
+
 //replaces setView method and sets to detected location
 map.locate({
 	setView: true,
@@ -41,9 +43,16 @@ map.on('locationerror', onLocationError);
 // load route from server
 $.getScript('http://apps.esrgc.org/maps/seagullcentury/data/route' + route + '.js', 
 	function(){
-		L.geoJson(route).addTo(map);
-	}
+		routeGeoJSON = L.geoJson(route).addTo(map);
+        //This function will add the route to the nearest rest stop to the map. Change the lat/lon values to GPS locations and call this on a button click. It's also in the wrong spot but it's a good spot for testing.
+        
+        var routeToNearestRestStop = new Route(routeGeoJSON, route, -75.599627, 38.339879);
+        L.geoJson(routeToNearestRestStop.getRoute(), {style: {color: "red"}}).addTo(map);
+        alert("Distance to nearest rest stop: " + routeToNearestRestStop.getGeoJSONLineDistance() + " Miles");
+    }
 );
+
+
 
 // Read a page's GET URL variables and return them as an associative array.
 function getUrlVars()
@@ -59,4 +68,6 @@ function getUrlVars()
     return vars;
 }
 
+//var location = new L.Control.Gps();
+//console.log(location)
 map.addControl( new L.Control.Gps());
