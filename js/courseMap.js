@@ -44,8 +44,8 @@ map.on('locationerror', onLocationError);
 $.getScript('http://apps.esrgc.org/maps/seagullcentury/data/route' + route + '.js', 
 	function(){
 		routeGeoJSON = L.geoJson(route).addTo(map);
-        //This function will add the route to the nearest rest stop to the map. Change the lat/lon values to GPS locations and call this on a button click. It's also in the wrong spot but it's a good spot for testing.
-        
+
+        //This function will add the route to the nearest rest stop to the map. Change the lat/lon values to the current GPS locations and call this on a button click rather than this callback function (aka it's in the wrong spot but it's a good spot for testing).
         var routeToNearestRestStop = new Route(routeGeoJSON, route, -75.599627, 38.339879);
         L.geoJson(routeToNearestRestStop.getRoute(), {style: {color: "red"}}).addTo(map);
         alert("Distance to nearest rest stop: " + routeToNearestRestStop.getGeoJSONLineDistance() + " Miles");
