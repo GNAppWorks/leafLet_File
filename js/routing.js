@@ -14,16 +14,20 @@ function Route(routeGeoJSON, route, lon, lat){
 	//Takes coordinates and returns the closest location to those coordinates on our route line. Utilizes the leaflet-knn library.
 	this.snapToLine = function(){
 		var lknn = leafletKnn(this.routeGeoJSON);
-		var closestPointOnLineUnformatted = lknn.nearest([this.lon, this.lat], 1, 500);
+		var closestPointOnLineUnformatted = lknn.nearest([this.lon, this.lat], 1, 999999);
+		console.log(closestPointOnLineUnformatted[0].lat);
 		//returns it in a format that's the same as the way GeoJSON has it
 		return new Array(closestPointOnLineUnformatted[0].lon, closestPointOnLineUnformatted[0].lat);
 	};
 
 	//Takes the lat/lon we found in snapToLine and returns the index of it in the GeoJSON route array. We need this because leaflet-knn returns the coordinate values, not the index
 	this.findRouteIndex = function(){
-		for(var i = 0; i < this.route.features[0].geometry.coordinates.length; i++){
-			if((this.route.features[0].geometry.coordinates[i][0] == this.closestPointOnLine[0]) && (this.route.features[0].geometry.coordinates[i][1] == this.closestPointOnLine[1])){
-				return i;
+		for(var i = 0; i < this.route.features.length; i++){
+			for(var x = 0; x < this.route.features[i].geometry.coordinates.length; x++){
+				if((this.route.features[i].geometry.coordinates[x][0] == this.closestPointOnLine[0]) && (this.route.features[i].geometry.coordinates[x][1] == this.closestPointOnLine[1])){
+					//Returns both values in the nested array as an array object
+					return new Array(i, x);
+				}
 			}
 		}
 		//Only returns -1 if the value isn't found. This will only happen if snapToLine and therefore leaflet-knn fail.
@@ -42,7 +46,9 @@ function Route(routeGeoJSON, route, lon, lat){
 				"coordinates": []
 			}
 		}
-		routeToNearestRestStop.geometry.coordinates = this.route.features[0].geometry.coordinates.slice(this.routeIndex);
+		//Note this.routeIndex[0] and [1] - it's this way because findRouteIndex returns the array indicies of both features[] (to get which line segment we're utilizing)
+		//and coordinates[] (to get the lat/lon index we figured out in findRouteIndex).
+		routeToNearestRestStop.geometry.coordinates = this.route.features[this.routeIndex[0]].geometry.coordinates.slice(this.routeIndex[1]);
 		return routeToNearestRestStop;
 	};
 
@@ -77,5 +83,6 @@ function Route(routeGeoJSON, route, lon, lat){
 	//Think of this as part of the constructor. It calls the functions above to set up the object.
 	this.closestPointOnLine = this.snapToLine();
 	this.routeIndex = this.findRouteIndex();
+	console.log(this.routeIndex);
 	this.routeToNearestRestStop = this.buildRoute();
 }
