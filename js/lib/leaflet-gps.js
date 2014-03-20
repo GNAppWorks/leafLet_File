@@ -61,7 +61,7 @@ L.Control.Gps = L.Control.extend({
         this._button = L.DomUtil.create('a', 'gps-button', container);
         //this._button.href = 'images/gps-icon.png';
         this._button.title = this.options.title;
-        this._button.src ='images/gps-icon.png';
+        this._button.src ='../style/images/gps-icon.png';
 		L.DomEvent
 			.on(this._button, 'click', L.DomEvent.stop, this)
 			.on(this._button, 'click', this._switchGps, this);
