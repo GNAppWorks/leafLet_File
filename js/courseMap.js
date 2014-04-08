@@ -30,15 +30,20 @@ function onLocationFound(e) {
 
     L.circle(e.latlng, radius).addTo(map);
 
-    console.log(e.latlng.lng);
-    console.log(e.latlng.lat);
-
     //This function will add the route to the nearest rest stop to the map. We're going to want to make this it's own button rather than calling it whenever the location is found.
     var routeToNearestRestStop = new Route(routeGeoJSON, route, e.latlng.lng, e.latlng.lat);
     L.geoJson(routeToNearestRestStop.getRoute(), {style: {color: "red"}}).addTo(map);
     
     //This next line is for testing purposes, but it fires so frequently that it's really annoying.
     //alert("Distance to nearest rest stop: " + routeToNearestRestStop.getGeoJSONLineDistance() + " Miles");
+    var speedText = '';
+    console.log(e.speed);
+    //Speed isn't always defined, it depends on the device, connection method, etc. We only add it if we're given a number for it that makes sense.
+    if(e.speed != undefined){
+        //e.speed is in m/s so we have to convert to mph
+        speedText = 'Speed: ' + (e.speed*2.23694) + ' mph<br>';
+    }
+    $('.distance-control').html(speedText + 'Nearest Rest Stop: ' + routeToNearestRestStop.getGeoJSONLineDistance() + ' miles');
 }
 
 map.on('locationfound', onLocationFound);
@@ -73,6 +78,16 @@ function getUrlVars()
     return vars;
 }
 
-//var location = new L.Control.Gps();
-//console.log(location)
-map.addControl( new L.Control.Gps());
+map.addControl(new L.Control.Gps());
+
+var DistanceControl = L.Control.extend({
+    options: {
+        position: 'bottomleft'
+    },
+
+    onAdd: function (map) {
+        var container = L.DomUtil.create('div', 'distance-control');
+        return container;
+    }
+});
+map.addControl(new DistanceControl());

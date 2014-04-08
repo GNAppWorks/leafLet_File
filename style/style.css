@@ -6,3 +6,9 @@ body {
 html, body, #map {
 	height: 100%;
 }
+
+.distance-control{
+	background: #fff;
+	background: rgba(255, 255, 255, 0.7);
+	font-size: 14px;
+}

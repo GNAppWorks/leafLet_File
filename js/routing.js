@@ -15,7 +15,7 @@ function Route(routeGeoJSON, route, lon, lat){
 	this.snapToLine = function(){
 		var lknn = leafletKnn(this.routeGeoJSON);
 		var closestPointOnLineUnformatted = lknn.nearest([this.lon, this.lat], 1, 999999);
-		console.log(closestPointOnLineUnformatted[0].lat);
+		//console.log(closestPointOnLineUnformatted[0].lat);
 		//returns it in a format that's the same as the way GeoJSON has it
 		return new Array(closestPointOnLineUnformatted[0].lon, closestPointOnLineUnformatted[0].lat);
 	};
@@ -83,6 +83,5 @@ function Route(routeGeoJSON, route, lon, lat){
 	//Think of this as part of the constructor. It calls the functions above to set up the object.
 	this.closestPointOnLine = this.snapToLine();
 	this.routeIndex = this.findRouteIndex();
-	console.log(this.routeIndex);
 	this.routeToNearestRestStop = this.buildRoute();
 }
