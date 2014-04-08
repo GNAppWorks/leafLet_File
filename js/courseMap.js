@@ -36,7 +36,9 @@ function onLocationFound(e) {
     //This function will add the route to the nearest rest stop to the map. We're going to want to make this it's own button rather than calling it whenever the location is found.
     var routeToNearestRestStop = new Route(routeGeoJSON, route, e.latlng.lng, e.latlng.lat);
     L.geoJson(routeToNearestRestStop.getRoute(), {style: {color: "red"}}).addTo(map);
-    alert("Distance to nearest rest stop: " + routeToNearestRestStop.getGeoJSONLineDistance() + " Miles");
+    
+    //This next line is for testing purposes, but it fires so frequently that it's really annoying.
+    //alert("Distance to nearest rest stop: " + routeToNearestRestStop.getGeoJSONLineDistance() + " Miles");
 }
 
 map.on('locationfound', onLocationFound);
