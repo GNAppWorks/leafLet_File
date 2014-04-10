@@ -9,7 +9,7 @@ var map = new L.Map(
 
 //load base layer
 var url = 'http://a.tile.openstreetmap.org/{z}/{x}/{y}.png';
-L.tileLayer(url, {maxZoom: 15}).addTo(map);
+L.tileLayer(url, {maxZoom: 19}).addTo(map);
 
 var route = getUrlVars()["route"];
 
@@ -18,17 +18,20 @@ var routeGeoJSON;
 //replaces setView method and sets to detected location
 map.locate({
 	setView: true,
-	maxZoom: 15
+	maxZoom: 16
 });
+
+var circle;
 
 // function for finding Geolocation and adding a marker to the map
 function onLocationFound(e) {
     var radius = e.accuracy / 2;
 
-    L.marker(e.latlng).addTo(map);
-        //.bindPopup("You are within " + radius + " meters from this point").openPopup();
+    if(circle != undefined){
+        map.removeLayer(circle);
+    }
 
-    L.circle(e.latlng, radius).addTo(map);
+    circle = L.circle(e.latlng, radius).addTo(map);
 
     //This function will add the route to the nearest rest stop to the map. We're going to want to make this it's own button rather than calling it whenever the location is found.
     var routeToNearestRestStop = new Route(routeGeoJSON, route, e.latlng.lng, e.latlng.lat);
@@ -37,7 +40,7 @@ function onLocationFound(e) {
     //This next line is for testing purposes, but it fires so frequently that it's really annoying.
     //alert("Distance to nearest rest stop: " + routeToNearestRestStop.getGeoJSONLineDistance() + " Miles");
     var speedText = '';
-    console.log(e.speed);
+    console.log(e);
     //Speed isn't always defined, it depends on the device, connection method, etc. We only add it if we're given a number for it that makes sense.
     if(e.speed != undefined){
         //e.speed is in m/s so we have to convert to mph
