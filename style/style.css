@@ -3,12 +3,28 @@ body {
 	margin: 0;
 }
 		
-html, body, #map {
+html, body {
 	height: 100%;
 }
+h1{
+	display: table-cell;
+    vertical-align: middle;
+    text-align:center;
+}
+#map{
+	height:90%;
+}
 
-.distance-control{
+#distance{
+	height:10%;
+	width:100%;
+	display: table;
+	background-color:#ddd;
+}
+
+.speed-control{
 	background: #fff;
 	background: rgba(255, 255, 255, 0.7);
 	font-size: 14px;
 }
+

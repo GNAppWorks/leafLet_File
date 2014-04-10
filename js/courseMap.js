@@ -3,7 +3,8 @@ var map = new L.Map(
 	'map', 
 	{
 		center: new L.LatLng(38.3456, -75.6058),
-		zoom: 12
+		zoom: 12,
+        trackResize: true
 	}
 );
 
@@ -15,11 +16,14 @@ var route = getUrlVars()["route"];
 
 var routeGeoJSON;
 
+var locateOptions = {
+    watch: true,
+    setView: true,
+    maxZoom: 16
+};
+
 //replaces setView method and sets to detected location
-map.locate({
-	setView: true,
-	maxZoom: 16
-});
+map.locate(locateOptions);
 
 var circle;
 
@@ -40,13 +44,13 @@ function onLocationFound(e) {
     //This next line is for testing purposes, but it fires so frequently that it's really annoying.
     //alert("Distance to nearest rest stop: " + routeToNearestRestStop.getGeoJSONLineDistance() + " Miles");
     var speedText = '';
-    console.log(e);
     //Speed isn't always defined, it depends on the device, connection method, etc. We only add it if we're given a number for it that makes sense.
     if(e.speed != undefined){
         //e.speed is in m/s so we have to convert to mph
-        speedText = 'Speed: ' + (e.speed*2.23694) + ' mph<br>';
+        speedText = '<h3>Speed: ' + Math.round(e.speed*2.23694) + ' mph</h3>';
     }
-    $('.distance-control').html(speedText + 'Nearest Rest Stop: ' + routeToNearestRestStop.getGeoJSONLineDistance() + ' miles');
+    $('.speed-control').html(speedText);
+    $('#distance').html('<h1>Nearest Rest Stop - ' + routeToNearestRestStop.getGeoJSONLineDistance() + ' miles</h1>');
 }
 
 map.on('locationfound', onLocationFound);
@@ -81,16 +85,51 @@ function getUrlVars()
     return vars;
 }
 
-map.addControl(new L.Control.Gps());
+//map.addControl(new L.Control.Gps());
 
-var DistanceControl = L.Control.extend({
+var SpeedControl = L.Control.extend({
     options: {
         position: 'bottomleft'
     },
 
     onAdd: function (map) {
-        var container = L.DomUtil.create('div', 'distance-control');
+        var container = L.DomUtil.create('div', 'speed-control');
         return container;
     }
 });
-map.addControl(new DistanceControl());
+map.addControl(new SpeedControl());
+
+map.addControl(new (L.Control.extend({
+    options: { position: 'bottomright' },
+    ButtonPressCallback: function(){
+        if(locateOptions.setView == true){
+            map.stopLocate();
+            locateOptions.setView = false;
+            map.locate(locateOptions);
+            $('.center-gps-button-interior').html("<button>Resume</button>");
+        }
+        else{
+            map.stopLocate();
+            locateOptions.setView = true;
+            map.locate(locateOptions);
+            $('.center-gps-button-interior').html("<button>Explore</button>");
+        }
+    },
+    onAdd: function (map) {
+        controlDiv = L.DomUtil.create('div', 'center-gps-button');
+        L.DomEvent
+            .addListener(controlDiv, 'click', L.DomEvent.stopPropagation)
+            .addListener(controlDiv, 'click', L.DomEvent.preventDefault)
+            .addListener(controlDiv, 'click', this.ButtonPressCallback);
+
+        // Set CSS for the control border
+        var controlUI = L.DomUtil.create('div', 'center-gps-button-border', controlDiv);
+        controlUI.title = 'Explore';
+
+        // Set CSS for the control interior
+        var controlText = L.DomUtil.create('div', 'center-gps-button-interior', controlUI);
+        controlText.innerHTML = '<button>Explore</button>';
+
+        return controlDiv;
+    }
+})));
