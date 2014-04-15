@@ -44,13 +44,14 @@ function onLocationFound(e) {
     //This next line is for testing purposes, but it fires so frequently that it's really annoying.
     //alert("Distance to nearest rest stop: " + routeToNearestRestStop.getGeoJSONLineDistance() + " Miles");
     var speedText = '';
+    e.speed = 20;
     //Speed isn't always defined, it depends on the device, connection method, etc. We only add it if we're given a number for it that makes sense.
     if(e.speed != undefined){
         //e.speed is in m/s so we have to convert to mph
-        speedText = '<h3>Speed: ' + Math.round(e.speed*2.23694) + ' mph</h3>';
+        speedText = '<div class="spacer"></div><h3>Speed: </h3><h3 class="red-text">' + Math.round(e.speed*2.23694) + ' mph</h3><div class="spacer"></div>';
     }
     $('.speed-control').html(speedText);
-    $('#distance').html('<h1>Nearest Rest Stop - ' + routeToNearestRestStop.getGeoJSONLineDistance() + ' miles</h1>');
+    $('#distance').html('<h2>Nearest Rest Stop - ' + routeToNearestRestStop.getGeoJSONLineDistance() + ' miles</h2>');
 }
 
 map.on('locationfound', onLocationFound);
