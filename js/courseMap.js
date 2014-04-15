@@ -1,6 +1,35 @@
+//IMPORTANT NOTE - these are string values, not numbers or booleans. This is to make URL parsing easier.
+//Default settings, can be overridden by passing values via the URL
+var settings = {
+    route: "0",
+    speed: "true",
+    vendors: "false",
+    distance: "true"
+};
+
+//Calls a function somewhere below to get the URL arguments and assign them to args (a JSON object)
+var args = getUrlVars();
+
+//Changes the default settings if there was a value passed for that setting via the URL
+for(var key in settings){
+    if(args[key] != undefined){
+        settings[key] = args[key];
+    }
+}
+
+//Makes the top bar invisible if the distance bar setting is set to off
+if(settings.distance == "false"){
+    $("#distance").hide();
+
+    //By default we assume the distance bar is going to be there, so we set a top margin on the +/- button group so it looks good. We need to alter it if the distance bar isn't going to be there.
+    //It's in #(document).ready() because since Leaflet adds this class dynamically we have to wait for the object to load into the DOM before we can alter it
+    $(document).ready(function() {
+        $(".leaflet-top").css("margin-top", "0px");
+    });
+}
+
 //initialize map
-var map = new L.Map(
-	'map', 
+var map = new L.Map('map', 
 	{
 		center: new L.LatLng(38.3456, -75.6058),
 		zoom: 12,
@@ -12,8 +41,6 @@ var map = new L.Map(
 var url = 'http://a.tile.openstreetmap.org/{z}/{x}/{y}.png';
 L.tileLayer(url, {maxZoom: 19}).addTo(map);
 
-var route = getUrlVars()["route"];
-
 var routeGeoJSON;
 
 var locateOptions = {
@@ -23,9 +50,9 @@ var locateOptions = {
 };
 
 //replaces setView method and sets to detected location
-map.locate(locateOptions);
 
 var circle;
+var hasGottenSpeed = false;
 
 // function for finding Geolocation and adding a marker to the map
 function onLocationFound(e) {
@@ -41,17 +68,43 @@ function onLocationFound(e) {
     var routeToNearestRestStop = new Route(routeGeoJSON, route, e.latlng.lng, e.latlng.lat);
     L.geoJson(routeToNearestRestStop.getRoute(), {style: {color: "red"}}).addTo(map);
     
-    //This next line is for testing purposes, but it fires so frequently that it's really annoying.
+    //This next line is for testing purposes, but it fires so frequently that it's really annoying so I'm commenting it out.
     //alert("Distance to nearest rest stop: " + routeToNearestRestStop.getGeoJSONLineDistance() + " Miles");
+    
     var speedText = '';
-    e.speed = 20;
     //Speed isn't always defined, it depends on the device, connection method, etc. We only add it if we're given a number for it that makes sense.
-    if(e.speed != undefined){
-        //e.speed is in m/s so we have to convert to mph
-        speedText = '<div class="spacer"></div><h3>Speed: </h3><h3 class="red-text">' + Math.round(e.speed*2.23694) + ' mph</h3><div class="spacer"></div>';
+    //If we get speed back in the e object and the speed setting is marked as true we go into this statement
+    if((e.speed != undefined) && (settings.speed == "true")){
+        console.log("here");
+        //hasGottenSpeed (defined outside of the scope of this function) will only be set to true if 1)the phone has the capability to recieve a speed value, which we know because
+        //the phone has previously given us an e.speed value, and 2)if settings.speed is set to true. It helps us out with our else if statement
+        hasGottenSpeed = true;
+        speedText = setSpeedText(e.speed);
+    }
+    //We'll go into this statement if e.speed was undefined but we've gotten the speed from a previous e object (so the phone is capable of giving it).
+    //This behavior occurs sometimes when the speed-capable phone isn't moving. 
+    else if ((e.speed == undefined) && (hasGottenSpeed == true)){
+        console.log("here1");
+        speedText = setSpeedText(0);
+    }
+    //If we hit this else statement, it means that the phone didn't and hasn't ever returned a speed value. If this happens, we have behavior that
+    //set speedText to be just '', which means it won't show up on the screen.
+    else{
+        speedText = setSpeedText(null);
     }
     $('.speed-control').html(speedText);
     $('#distance').html('<h2>Nearest Rest Stop - ' + routeToNearestRestStop.getGeoJSONLineDistance() + ' miles</h2>');
+}
+
+function setSpeedText(speed){
+    //e.speed is in m/s so we have to convert to mph
+    console.log(speed);
+    if(speed != null){
+        return '<div class="spacer"></div><h3>Speed: </h3><h3 class="red-text">' + Math.round(speed*2.23694) + ' mph</h3><div class="spacer"></div>';
+    }
+    else{
+        return '';
+    }
 }
 
 map.on('locationfound', onLocationFound);
@@ -64,9 +117,10 @@ function onLocationError(e) {
 map.on('locationerror', onLocationError);
 
 // load route from server
-$.getScript('http://apps.esrgc.org/maps/seagullcentury/data/route' + route + '.js', 
+$.getScript('http://apps.esrgc.org/maps/seagullcentury/data/route' + settings.route + '.js', 
 	function(){
 		routeGeoJSON = L.geoJson(route).addTo(map);
+        map.locate(locateOptions);
     }
 );
 
@@ -82,6 +136,9 @@ function getUrlVars()
         hash = hashes[i].split('=');
         vars.push(hash[0]);
         vars[hash[0]] = hash[1];
+    }
+    if(vars==undefined){
+        vars = defaults.hash[0];
     }
     return vars;
 }
