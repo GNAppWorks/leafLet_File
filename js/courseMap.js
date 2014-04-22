@@ -160,7 +160,7 @@ function getUrlVars()
 
 var SpeedControl = L.Control.extend({
     options: {
-        position: 'bottomleft'
+        position: 'topleft'
     },
 
     onAdd: function (map) {
@@ -171,7 +171,7 @@ var SpeedControl = L.Control.extend({
 map.addControl(new SpeedControl());
 
 map.addControl(new (L.Control.extend({
-    options: { position: 'topleft' },
+    options: { position: 'bottomleft' },
     ButtonPressCallback: function(){
         if(locateOptions.setView == true){
             map.stopLocate();
