@@ -81,9 +81,11 @@ function onLocationFound(e) {
     circle = L.circle(e.latlng, radius).addTo(map);
 
     //This function will add the route to the nearest rest stop to the map. We're going to want to make this it's own button rather than calling it whenever the location is found.
-    var routeToNearestRestStop = new Route(routeGeoJSON, route, e.latlng.lng, e.latlng.lat);
-    L.geoJson(routeToNearestRestStop.getRoute(), {style: {color: "red"}}).addTo(map);
-    
+    if(settings.route != "-1"){
+        var routeToNearestRestStop = new Route(routeGeoJSON, route, e.latlng.lng, e.latlng.lat);
+        L.geoJson(routeToNearestRestStop.getRoute(), {style: {color: "red"}}).addTo(map);
+    }
+
     //This next line is for testing purposes, but it fires so frequently that it's really annoying so I'm commenting it out.
     //alert("Distance to nearest rest stop: " + routeToNearestRestStop.getGeoJSONLineDistance() + " Miles");
     
@@ -107,7 +109,9 @@ function onLocationFound(e) {
         speedText = setSpeedText(null);
     }
     $('.speed-control').html(speedText);
-    $('#distance').html('<h2>Nearest Rest Stop - ' + routeToNearestRestStop.getGeoJSONLineDistance() + ' miles</h2>');
+    if(settings.route != "-1"){
+        $('#distance').html('<h2>Nearest Rest Stop - ' + routeToNearestRestStop.getGeoJSONLineDistance() + ' miles</h2>');
+    }
 }
 
 function setSpeedText(speed){
@@ -129,15 +133,16 @@ function onLocationError(e) {
 
 map.on('locationerror', onLocationError);
 
-// load route from server
-$.getScript('http://apps.esrgc.org/maps/seagullcentury/data/route' + settings.route + '.js', 
-	function(){
-		routeGeoJSON = L.geoJson(route).addTo(map);
-        map.locate(locateOptions);
-    }
-);
+map.locate(locateOptions);
 
-
+if(settings.route != "-1"){
+    // load route from server
+    $.getScript('http://apps.esrgc.org/maps/seagullcentury/data/route' + settings.route + '.js', 
+    	function(){
+    		routeGeoJSON = L.geoJson(route).addTo(map);
+        }
+    );
+}
 
 // Read a page's GET URL variables and return them as an associative array.
 function getUrlVars()
