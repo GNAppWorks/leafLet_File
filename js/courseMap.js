@@ -113,7 +113,6 @@ function onLocationFound(e) {
 
 function setSpeedText(speed){
     //e.speed is in m/s so we have to convert to mph
-    console.log(speed);
     if(speed != null){
         return '<div class="spacer"></div><h3>Speed: </h3><h3 class="red-text">' + Math.round(speed*2.23694) + ' mph</h3><div class="spacer"></div>';
     }
@@ -179,13 +178,13 @@ map.addControl(new (L.Control.extend({
             map.stopLocate();
             locateOptions.setView = false;
             map.locate(locateOptions);
-            $('.center-gps-button-interior').html("<button>Resume</button>");
+            $('.center-gps-button-interior').html("<img src='style/img/TrackingOff.png'>");
         }
         else{
             map.stopLocate();
             locateOptions.setView = true;
             map.locate(locateOptions);
-            $('.center-gps-button-interior').html("<button>Explore</button>");
+            $('.center-gps-button-interior').html("<img src='style/img/TrackingOn.png'>");
         }
     },
     onAdd: function (map) {
@@ -201,7 +200,7 @@ map.addControl(new (L.Control.extend({
 
         // Set CSS for the control interior
         var controlText = L.DomUtil.create('div', 'center-gps-button-interior', controlUI);
-        controlText.innerHTML = '<button>Explore</button>';
+        controlText.innerHTML = "<img src='style/img/TrackingOff.png'>";
 
         return controlDiv;
     }
