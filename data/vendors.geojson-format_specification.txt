@@ -1,3 +1,9 @@
+******************************************************************************************************************************************
+This is the format you want to use (geojson points in a featurecollection with name, description, and address in the properties field).
+Do this in data/vendors.geojson. Functionality to pull that file from the server and add the points to the map is in js/courseMap.js. 
+Adding features to that data file will automatically make them appear on the map with no other work needed.
+******************************************************************************************************************************************
+
 { 
 	"type": "FeatureCollection",
     "features": [
@@ -62,4 +68,4 @@
 		  	}
 	  	}
 	]
-}
+}*/
