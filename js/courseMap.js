@@ -3,7 +3,7 @@
 var settings = {
     route: "0",
     speed: "true",
-    vendors: "false",
+    vendors: "true",
     distance: "true"
 };
 
@@ -53,6 +53,21 @@ var locateOptions = {
 
 var circle;
 var hasGottenSpeed = false;
+
+if(settings.vendors == "true"){
+    function onEachFeature(feature, layer) {
+        if(feature.properties){
+            layer.bindPopup("<h1>"+feature.properties.name+"</h1><h3>"+feature.properties.address+"</h3><h4>"+feature.properties.description+"</h4>");
+        }
+    }
+
+    $.get('http://oxford.esrgc.org/maps/seagullcentury/data/vendors.geojson', 
+        function(data){
+            L.geoJson(JSON.parse(data), {onEachFeature: onEachFeature}).addTo(map);
+        }
+    );
+
+}
 
 // function for finding Geolocation and adding a marker to the map
 function onLocationFound(e) {
