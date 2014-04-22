@@ -178,13 +178,13 @@ map.addControl(new (L.Control.extend({
             map.stopLocate();
             locateOptions.setView = false;
             map.locate(locateOptions);
-            $('.center-gps-button-interior').html("<img src='style/img/TrackingOff.png'>");
+            $('.center-gps-button-interior').html("<button><h2>Location Tracking - Off</h2></button>");
         }
         else{
             map.stopLocate();
             locateOptions.setView = true;
             map.locate(locateOptions);
-            $('.center-gps-button-interior').html("<img src='style/img/TrackingOn.png'>");
+            $('.center-gps-button-interior').html("<button><h2>Location Tracking - On</h2></button>");
         }
     },
     onAdd: function (map) {
@@ -200,7 +200,7 @@ map.addControl(new (L.Control.extend({
 
         // Set CSS for the control interior
         var controlText = L.DomUtil.create('div', 'center-gps-button-interior', controlUI);
-        controlText.innerHTML = "<img src='style/img/TrackingOff.png'>";
+        controlText.innerHTML = "<button><h2>Location Tracking - Off</h2></button>";
 
         return controlDiv;
     }
