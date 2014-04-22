@@ -2,9 +2,9 @@
 //Default settings, can be overridden by passing values via the URL
 var settings = {
     route: "0",
-    speed: "true",
-    vendors: "true",
-    distance: "true"
+    speed: "1",
+    vendors: "1",
+    distance: "1"
 };
 
 //Calls a function somewhere below to get the URL arguments and assign them to args (a JSON object)
@@ -18,7 +18,7 @@ for(var key in settings){
 }
 
 //Makes the top bar invisible if the distance bar setting is set to off
-if(settings.distance == "false"){
+if(settings.distance == "0"){
     $("#distance").hide();
 
     //By default we assume the distance bar is going to be there, so we set a top margin on the +/- button group so it looks good. We need to alter it if the distance bar isn't going to be there.
@@ -33,7 +33,8 @@ var map = new L.Map('map',
 	{
 		center: new L.LatLng(38.3456, -75.6058),
 		zoom: 12,
-        trackResize: true
+        trackResize: true,
+        zoomControl:false
 	}
 );
 
@@ -54,7 +55,7 @@ var locateOptions = {
 var circle;
 var hasGottenSpeed = false;
 
-if(settings.vendors == "true"){
+if(settings.vendors == "1"){
     function onEachFeature(feature, layer) {
         if(feature.properties){
             layer.bindPopup("<h1>"+feature.properties.name+"</h1><h3>"+feature.properties.address+"</h3><h4>"+feature.properties.description+"</h4>");
@@ -89,8 +90,8 @@ function onLocationFound(e) {
     var speedText = '';
     //Speed isn't always defined, it depends on the device, connection method, etc. We only add it if we're given a number for it that makes sense.
     //If we get speed back in the e object and the speed setting is marked as true we go into this statement
-    if((e.speed != undefined) && (settings.speed == "true")){
-        console.log("here");
+    e.speed = 45;
+    if((e.speed != undefined) && (settings.speed == "1")){
         //hasGottenSpeed (defined outside of the scope of this function) will only be set to true if 1)the phone has the capability to recieve a speed value, which we know because
         //the phone has previously given us an e.speed value, and 2)if settings.speed is set to true. It helps us out with our else if statement
         hasGottenSpeed = true;
@@ -99,7 +100,6 @@ function onLocationFound(e) {
     //We'll go into this statement if e.speed was undefined but we've gotten the speed from a previous e object (so the phone is capable of giving it).
     //This behavior occurs sometimes when the speed-capable phone isn't moving. 
     else if ((e.speed == undefined) && (hasGottenSpeed == true)){
-        console.log("here1");
         speedText = setSpeedText(0);
     }
     //If we hit this else statement, it means that the phone didn't and hasn't ever returned a speed value. If this happens, we have behavior that
@@ -114,7 +114,7 @@ function onLocationFound(e) {
 function setSpeedText(speed){
     //e.speed is in m/s so we have to convert to mph
     if(speed != null){
-        return '<div class="spacer"></div><h3>Speed: </h3><h3 class="red-text">' + Math.round(speed*2.23694) + ' mph</h3><div class="spacer"></div>';
+        return '<div class="spacer"></div><h3 class="speed">Speed: </h3><h3 class="red-text speed">' + Math.round(speed*2.23694) + ' mph</h3><div class="spacer"></div>';
     }
     else{
         return '';
