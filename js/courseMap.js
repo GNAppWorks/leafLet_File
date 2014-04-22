@@ -90,7 +90,6 @@ function onLocationFound(e) {
     var speedText = '';
     //Speed isn't always defined, it depends on the device, connection method, etc. We only add it if we're given a number for it that makes sense.
     //If we get speed back in the e object and the speed setting is marked as true we go into this statement
-    e.speed = 45;
     if((e.speed != undefined) && (settings.speed == "1")){
         //hasGottenSpeed (defined outside of the scope of this function) will only be set to true if 1)the phone has the capability to recieve a speed value, which we know because
         //the phone has previously given us an e.speed value, and 2)if settings.speed is set to true. It helps us out with our else if statement
@@ -172,7 +171,7 @@ var SpeedControl = L.Control.extend({
 map.addControl(new SpeedControl());
 
 map.addControl(new (L.Control.extend({
-    options: { position: 'bottomright' },
+    options: { position: 'topleft' },
     ButtonPressCallback: function(){
         if(locateOptions.setView == true){
             map.stopLocate();
