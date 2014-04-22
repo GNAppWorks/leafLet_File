@@ -199,7 +199,7 @@ map.addControl(new (L.Control.extend({
 
         // Set CSS for the control interior
         var controlText = L.DomUtil.create('div', 'center-gps-button-interior', controlUI);
-        controlText.innerHTML = "<button><h2>Location Tracking - Off</h2></button>";
+        controlText.innerHTML = "<button><h2>Location Tracking - On</h2></button>";
 
         return controlDiv;
     }
