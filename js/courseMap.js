@@ -38,9 +38,12 @@ var map = new L.Map('map',
 	}
 );
 
-//load base layer
-var url = 'http://a.tile.openstreetmap.org/{z}/{x}/{y}.png';
-L.tileLayer(url, {maxZoom: 19}).addTo(map);
+//URL of the network tiles
+var networkURL = 'http://a.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png';
+//URL of the local tiles. We've only caached zoom level 14.
+var localURL = 'data/tiles/{z}/{x}/{y}.png'
+//load base layer. default is network, if there's no network we'll eventually hit the setInterval 8 second timer and load the local tiles.
+var baseLayer = L.tileLayer(networkURL, {maxZoom: 19}).addTo(map);
 
 var routeGeoJSON;
 
@@ -209,3 +212,29 @@ map.addControl(new (L.Control.extend({
         return controlDiv;
     }
 })));
+
+//the network status. Options are "network" and "local"
+var networkMode = "network";
+
+//Determines if we have a network. If the network status changes to local, we load local tiles. If it changes to network, we load network tiles.
+function checkNetworkMode(){
+    if(navigator.onLine && (networkMode == "local")){
+        map.removeLayer(baseLayer);
+        baseLayer = L.tileLayer(networkURL, {maxZoom: 19}).addTo(map).redraw();
+        networkMode = "network";
+        console.log("changing to network mode");
+    }
+    else if((navigator.onLine == false) && (networkMode == "network")){
+        map.removeLayer(baseLayer);
+        baseLayer = L.tileLayer(localURL, {maxZoom: 14, minZoom:14}).addTo(map);
+        map.setZoom(14);
+        networkMode = "local";
+        console.log("changing to local mode");
+    }
+    else{
+        console.log("no network change");
+    }
+}
+
+//Will call checkNetworkMode ever 8 seconds
+var checkNetworkConnection = window.setInterval(checkNetworkMode, 8000);
