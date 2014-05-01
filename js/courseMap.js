@@ -223,7 +223,26 @@ map.addControl(new (L.Control.extend({
     }
 })));
 
+function onOnline(){
+    map.removeLayer(baseLayer);
+    baseLayer = L.tileLayer(networkURL, {maxZoom: 19}).addTo(map).redraw();
+    networkMode = "network";
+    alert("changing to network mode");
+}
 
+function onOffline(){
+    map.removeLayer(baseLayer);
+    baseLayer = L.tileLayer(localURL, {maxZoom: 14, minZoom:14}).addTo(map);
+    map.setZoom(14);
+    networkMode = "local";
+    alert("changing to local mode");
+}
+
+document.addEventListener("online", onOnline, false);
+document.addEventListener("offline", onOffline, false);
+
+
+/*
 //Determines if we have a network. If the network status changes to local, we load local tiles. If it changes to network, we load network tiles.
 function checkNetworkMode(){
     if(navigator.onLine && (networkMode == "local")){
@@ -245,4 +264,4 @@ function checkNetworkMode(){
 }
 
 //Will call checkNetworkMode ever 8 seconds
-var checkNetworkConnection = window.setInterval(checkNetworkMode, 8000);
+var checkNetworkConnection = window.setInterval(checkNetworkMode, 8000);*/
