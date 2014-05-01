@@ -227,7 +227,6 @@ function onOnline(){
     map.removeLayer(baseLayer);
     baseLayer = L.tileLayer(networkURL, {maxZoom: 19}).addTo(map).redraw();
     networkMode = "network";
-    alert("changing to network mode");
 }
 
 function onOffline(){
@@ -235,22 +234,26 @@ function onOffline(){
     baseLayer = L.tileLayer(localURL, {maxZoom: 14, minZoom:14}).addTo(map);
     map.setZoom(14);
     networkMode = "local";
-    alert("changing to local mode");
 }
 
 var xhr;
 
+//Determines if we have a network. If the network status changes to local and the request returns 0 (meaning no network connection and local tiles
+//aren't loaded yet), we load local tiles. If it changes to network and the local tiles are loaded currently, we load network tiles.
 function state_change(){
    if(xhr.readyState == 4){
-        if(xhr.status == 200){
-            console.log('worked'); 
+        //We have a network and the current network status in the app is local, meaning we have to switch to network load and load network tiles
+        if((xhr.status == 200) && (networkMode == "local")){
             onOnline();
-        } else if(xhr.status == 0) {
-            console.log('no internet'); 
+        }
+        //We have no network and the current network status in the app is network, meaning we have to switch to local load and load local tiles
+        else if((xhr.status == 0) && (networkMode == "network")) {
             onOffline();
-        } else {
-            console.log("error")
-          // Some other error
+        }
+        //This will be caused for xhr.status numbers other than 200(we have a network) and 0(we don't have a network) or if the networkmode is already
+        //set properly for the returned HTML status
+        else{
+            console.log("No network change or unknown error")
         } 
    }
 }
@@ -258,33 +261,10 @@ function state_change(){
 function checkNetworkMode(){
     xhr = new XMLHttpRequest();
     xhr.addEventListener('readystatechange', state_change, true);
+    //We send a get request to the given URL. We then get the HTML status in state_change() and figure out if we need to change the network status
     xhr.open("GET", "http://oxford.esrgc.org/maps/seagullcentury/style/gps-icon.png", true);
     xhr.send(null);
 }
 
-
-
-
-/*
-//Determines if we have a network. If the network status changes to local, we load local tiles. If it changes to network, we load network tiles.
-function checkNetworkMode(){
-    if(navigator.onLine && (networkMode == "local")){
-        map.removeLayer(baseLayer);
-        baseLayer = L.tileLayer(networkURL, {maxZoom: 19}).addTo(map).redraw();
-        networkMode = "network";
-        alert("changing to network mode");
-    }
-    else if((navigator.onLine == false) && (networkMode == "network")){
-        map.removeLayer(baseLayer);
-        baseLayer = L.tileLayer(localURL, {maxZoom: 14, minZoom:14}).addTo(map);
-        map.setZoom(14);
-        networkMode = "local";
-        alert("changing to local mode");
-    }
-    else{
-        alert("no network change");
-    }
-}
-*/
 //Will call checkNetworkMode ever 8 seconds
 var checkNetworkConnection = window.setInterval(checkNetworkMode, 8000);
