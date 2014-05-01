@@ -1,3 +1,6 @@
+//the network status. Options are "network" and "local"
+var networkMode = "network";
+
 //IMPORTANT NOTE - these are string values, not numbers or booleans. This is to make URL parsing easier.
 //Default settings, can be overridden by passing values via the URL
 var settings = {
@@ -213,8 +216,6 @@ map.addControl(new (L.Control.extend({
     }
 })));
 
-//the network status. Options are "network" and "local"
-var networkMode = "network";
 
 //Determines if we have a network. If the network status changes to local, we load local tiles. If it changes to network, we load network tiles.
 function checkNetworkMode(){
