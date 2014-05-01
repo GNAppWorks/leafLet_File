@@ -44,7 +44,14 @@ var map = new L.Map('map',
 //URL of the network tiles
 var networkURL = 'http://a.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png';
 //URL of the local tiles. We've only caached zoom level 14.
-var localURL = 'data/tiles/{z}/{x}/{y}.png'
+var localURL;
+var ua = navigator.userAgent.toLowerCase();
+if(ua.match(/Android/)){
+    localURL = 'file:///android_asset/data/tiles/{z}/{x}/{y}.png';
+}
+else if(ua.match(/(iPhone|iPod|iPad)/)){
+
+}
 //load base layer. default is network, if there's no network we'll eventually hit the setInterval 8 second timer and load the local tiles.
 var baseLayer = L.tileLayer(networkURL, {maxZoom: 19}).addTo(map);
 
@@ -223,17 +230,17 @@ function checkNetworkMode(){
         map.removeLayer(baseLayer);
         baseLayer = L.tileLayer(networkURL, {maxZoom: 19}).addTo(map).redraw();
         networkMode = "network";
-        console.log("changing to network mode");
+        alert("changing to network mode");
     }
     else if((navigator.onLine == false) && (networkMode == "network")){
         map.removeLayer(baseLayer);
         baseLayer = L.tileLayer(localURL, {maxZoom: 14, minZoom:14}).addTo(map);
         map.setZoom(14);
         networkMode = "local";
-        console.log("changing to local mode");
+        alert("changing to local mode");
     }
     else{
-        console.log("no network change");
+        alert("no network change");
     }
 }
 
