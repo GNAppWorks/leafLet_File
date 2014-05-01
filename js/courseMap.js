@@ -33,12 +33,12 @@ if(settings.distance == "0"){
 
 //initialize map
 var map = new L.Map('map', 
-	{
-		center: new L.LatLng(38.3456, -75.6058),
-		zoom: 12,
+    {
+        center: new L.LatLng(38.3456, -75.6058),
+        zoom: 12,
         trackResize: true,
         zoomControl:false
-	}
+    }
 );
 
 //URL of the network tiles
@@ -47,7 +47,7 @@ var networkURL = 'http://a.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png';
 var localURL = 'data/tiles/{z}/{x}/{y}.png';
 var ua = navigator.userAgent.toLowerCase();
 if(ua.match(/Android/)){
-    localURL = 'file:///android_asset/tiles/{z}/{x}/{y}.png';
+    localURL = 'data/tiles/{z}/{x}/{y}.png';
 }
 else if(ua.match(/(iPhone|iPod|iPad)/)){
 
@@ -151,8 +151,8 @@ map.locate(locateOptions);
 if(settings.route != "-1"){
     // load route from server
     $.getScript('http://apps.esrgc.org/maps/seagullcentury/data/route' + settings.route + '.js', 
-    	function(){
-    		routeGeoJSON = L.geoJson(route).addTo(map);
+        function(){
+            routeGeoJSON = L.geoJson(route).addTo(map);
         }
     );
 }
