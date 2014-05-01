@@ -238,6 +238,8 @@ function onOffline(){
     alert("changing to local mode");
 }
 
+var xhr;
+
 function state_change(){
    if(xhr.readyState == 4){
         if(xhr.status == 200){
@@ -254,7 +256,7 @@ function state_change(){
 }
 
 function checkNetworkMode(){
-    var xhr = new XMLHttpRequest();
+    xhr = new XMLHttpRequest();
     xhr.addEventListener('readystatechange', state_change, true);
     xhr.open("GET", "http://oxford.esrgc.org/maps/seagullcentury/style/gps-icon.png", true);
     xhr.send(null);
