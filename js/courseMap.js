@@ -44,10 +44,10 @@ var map = new L.Map('map',
 //URL of the network tiles
 var networkURL = 'http://a.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png';
 //URL of the local tiles. We've only caached zoom level 14.
-var localURL;
+var localURL = 'data/tiles/{z}/{x}/{y}.png';
 var ua = navigator.userAgent.toLowerCase();
 if(ua.match(/Android/)){
-    localURL = 'file:///android_asset/data/tiles/{z}/{x}/{y}.png';
+    localURL = 'file:///android_asset/tiles/{z}/{x}/{y}.png';
 }
 else if(ua.match(/(iPhone|iPod|iPad)/)){
 
@@ -224,12 +224,14 @@ map.addControl(new (L.Control.extend({
 })));
 
 function onOnline(){
+    console.log("entering network mode");
     map.removeLayer(baseLayer);
     baseLayer = L.tileLayer(networkURL, {maxZoom: 19}).addTo(map).redraw();
     networkMode = "network";
 }
 
 function onOffline(){
+    console.log("entering local mode");
     map.removeLayer(baseLayer);
     baseLayer = L.tileLayer(localURL, {maxZoom: 14, minZoom:14}).addTo(map);
     map.setZoom(14);
