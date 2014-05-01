@@ -238,8 +238,29 @@ function onOffline(){
     alert("changing to local mode");
 }
 
-document.addEventListener("online", onOnline, false);
-document.addEventListener("offline", onOffline, false);
+function state_change(){
+   if(xhr.readyState == 4){
+        if(xhr.status == 200){
+            console.log('worked'); 
+            onOnline();
+        } else if(xhr.status == 0) {
+            console.log('no internet'); 
+            onOffline();
+        } else {
+            console.log("error")
+          // Some other error
+        } 
+   }
+}
+
+function checkNetworkMode(){
+    var xhr = new XMLHttpRequest();
+    xhr.addEventListener('readystatechange', state_change, true);
+    xhr.open("GET", "http://oxford.esrgc.org/maps/seagullcentury/style/gps-icon.png", true);
+    xhr.send(null);
+}
+
+
 
 
 /*
@@ -262,6 +283,6 @@ function checkNetworkMode(){
         alert("no network change");
     }
 }
-
+*/
 //Will call checkNetworkMode ever 8 seconds
-var checkNetworkConnection = window.setInterval(checkNetworkMode, 8000);*/
+var checkNetworkConnection = window.setInterval(checkNetworkMode, 8000);
