@@ -150,7 +150,7 @@ map.locate(locateOptions);
 
 if(settings.route != "-1"){
     // load route from server
-    $.getScript('http://apps.esrgc.org/maps/seagullcentury/data/route' + settings.route + '.js', 
+    $.getScript('http://oxford.esrgc.org/maps/seagullcentury/data/route' + settings.route + '.js', 
         function(){
             routeGeoJSON = L.geoJson(route).addTo(map);
         }
