@@ -216,6 +216,7 @@ map.addControl(new (L.Control.extend({
     }
 })));
 
+//Called when we go from offline to online
 function onOnline(){
     console.log("entering network mode");
     map.removeLayer(baseLayer);
@@ -223,6 +224,7 @@ function onOnline(){
     networkMode = "network";
 }
 
+//Called when we go from online to offline
 function onOffline(){
     console.log("entering local mode");
     map.removeLayer(baseLayer);
@@ -231,6 +233,8 @@ function onOffline(){
     networkMode = "local";
 }
 
+//Called when we have an active internet connection during every callback. Purpose is to figure out whether we need to switch to network mode
+//from local mode or whether we were in network mode during the last time this function was called
 function networkDetected(){
     //We have a network and the current network status in the app is local, meaning we have to switch to network load and load network tiles
     if(networkMode == "local"){
@@ -241,6 +245,8 @@ function networkDetected(){
     } 
 }
 
+//Called when we don't have an active internet connection during every callback. Purpose is to figure out whether we need to switch to local mode
+//from network mode or whether we were in local mode during the last time this function was called
 function noNetworkDetected(){
     //We have no network and the current network status in the app is network, meaning we have to switch to local load and load local tiles
     if(networkMode == "network"){
@@ -251,20 +257,19 @@ function noNetworkDetected(){
     } 
 }
 
+//First of all, I apologize for how terrible this workaround is. The purpose of this part of the code is to detect network connection so we can
+//switch to local tiles if we need to. In short, every 8 seconds we call checkNetworkMode(). This requests an image on
+//a remote server, sets width/height to 0, makes it so we don't cache the image, and then insert it into the DOM. If there's a network connection
+//we'll hit the onload event in the HTML and, if we were in local mode 8 seconds previously, we'll switch to network mode. Conversely, if there's
+//no network connection and 8 seconds ago we were in network mode then we need to switch the local mode. Local and network modes just change whether
+//we pull the tiles from the internet or from the local file system.
+
+//The counter lets us append ?counter to the end of the src attribute, meaning we won't cache our images. It needs to be this way because
+//we need to try to get the image from the server every single time or this would be a bad network detection algorithm.
+var counter = 0;
 function checkNetworkMode(){
-    //We send a get request to the given URL. We then see if the request succeeds or fails and figure out if we need to change the network status.
-    //We use getScript because it ignores the same origin policy and this js will be local, which means we need to request a non-local file
-    //to determine if we're actually connected  
-    $.getScript('http://oxford.esrgc.org/maps/seagullcentury/data/NetworkDetection.js', 
-        function(){
-            if(typeof connected === 'undefined'){
-                noNetworkDetected();
-            }
-            else{
-                NetworkDetected();
-            }
-        }
-    );
+    $("#networkImageContainer").html('<img id="imgContainer" src="http://oxford.esrgc.org/maps/seagullcentury/style/gps-icon.png?'+counter+'" onerror="noNetworkDetected()" onload="networkDetected()" width="0" height="0">');
+    counter++;
 }
 
 //Will call checkNetworkMode ever 8 seconds
