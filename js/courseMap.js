@@ -69,14 +69,11 @@ if(settings.vendors == "1"){
         }
     }
 
-    $.ajax({
-        dataType: "jsonp",
-        url: "http://oxford.esrgc.org/maps/seagullcentury/data/vendors.geojson",
-        success:function(data) {
-            L.geoJson(JSON.parse(data), {onEachFeature: onEachFeature}).addTo(map);
+    $.getScript('http://oxford.esrgc.org/maps/seagullcentury/data/vendors.js', 
+        function(){
+            L.geoJson(vendors, {onEachFeature: onEachFeature}).addTo(map);
         }
-    });
-
+    );
 }
 
 // function for finding Geolocation and adding a marker to the map
@@ -234,34 +231,40 @@ function onOffline(){
     networkMode = "local";
 }
 
-var xhr;
+function networkDetected(){
+    //We have a network and the current network status in the app is local, meaning we have to switch to network load and load network tiles
+    if(networkMode == "local"){
+        onOnline();
+    }
+    else{
+        console.log("No network change or unknown error");
+    } 
+}
 
-//Determines if we have a network. If the network status changes to local and the request returns 0 (meaning no network connection and local tiles
-//aren't loaded yet), we load local tiles. If it changes to network and the local tiles are loaded currently, we load network tiles.
-function state_change(){
-   if(xhr.readyState == 4){
-        //We have a network and the current network status in the app is local, meaning we have to switch to network load and load network tiles
-        if((xhr.status == 200) && (networkMode == "local")){
-            onOnline();
-        }
-        //We have no network and the current network status in the app is network, meaning we have to switch to local load and load local tiles
-        else if((xhr.status == 0) && (networkMode == "network")) {
-            onOffline();
-        }
-        //This will be caused for xhr.status numbers other than 200(we have a network) and 0(we don't have a network) or if the networkmode is already
-        //set properly for the returned HTML status
-        else{
-            console.log("No network change or unknown error")
-        } 
-   }
+function noNetworkDetected(){
+    //We have no network and the current network status in the app is network, meaning we have to switch to local load and load local tiles
+    if(networkMode == "network"){
+        onOffline();
+    }
+    else{
+        console.log("No network change or unknown error");
+    } 
 }
 
 function checkNetworkMode(){
-    xhr = new XMLHttpRequest();
-    xhr.addEventListener('readystatechange', state_change, true);
-    //We send a get request to the given URL. We then get the HTML status in state_change() and figure out if we need to change the network status
-    xhr.open("GET", "http://oxford.esrgc.org/maps/seagullcentury/style/gps-icon.png", true);
-    xhr.send(null);
+    //We send a get request to the given URL. We then see if the request succeeds or fails and figure out if we need to change the network status.
+    //We use getScript because it ignores the same origin policy and this js will be local, which means we need to request a non-local file
+    //to determine if we're actually connected  
+    $.getScript('http://oxford.esrgc.org/maps/seagullcentury/data/NetworkDetection.js', 
+        function(){
+            if(typeof connected === 'undefined'){
+                noNetworkDetected();
+            }
+            else{
+                NetworkDetected();
+            }
+        }
+    );
 }
 
 //Will call checkNetworkMode ever 8 seconds
