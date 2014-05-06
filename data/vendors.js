@@ -1,4 +1,4 @@
-{ 
+var vendors = { 
 	"type": "FeatureCollection",
     "features": [
 		{
@@ -62,4 +62,4 @@
 		  	}
 	  	}
 	]
-}
+};

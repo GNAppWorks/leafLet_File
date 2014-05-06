@@ -45,13 +45,7 @@ var map = new L.Map('map',
 var networkURL = 'http://a.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png';
 //URL of the local tiles. We've only caached zoom level 14.
 var localURL = 'data/tiles/{z}/{x}/{y}.png';
-var ua = navigator.userAgent.toLowerCase();
-if(ua.match(/Android/)){
-    localURL = 'data/tiles/{z}/{x}/{y}.png';
-}
-else if(ua.match(/(iPhone|iPod|iPad)/)){
 
-}
 //load base layer. default is network, if there's no network we'll eventually hit the setInterval 8 second timer and load the local tiles.
 var baseLayer = L.tileLayer(networkURL, {maxZoom: 19}).addTo(map);
 
@@ -75,11 +69,13 @@ if(settings.vendors == "1"){
         }
     }
 
-    $.get('http://oxford.esrgc.org/maps/seagullcentury/data/vendors.geojson', 
-        function(data){
+    $.ajax({
+        dataType: "jsonp",
+        url: "http://oxford.esrgc.org/maps/seagullcentury/data/vendors.geojson",
+        success:function(data) {
             L.geoJson(JSON.parse(data), {onEachFeature: onEachFeature}).addTo(map);
         }
-    );
+    });
 
 }
 
