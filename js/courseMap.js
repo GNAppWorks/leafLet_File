@@ -46,7 +46,7 @@ var networkURL = 'http://a.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png';
 //URL of the local tiles. We've only caached zoom level 14.
 var localURL = 'data/tiles/{z}/{x}/{y}.png';
 
-//load base layer. default is network, if there's no network we'll eventually hit the setInterval 8 second timer and load the local tiles.
+//load base layer. default is network, if there's no network we'll eventually hit the setInterval 5 second timer and load the local tiles.
 var baseLayer = L.tileLayer(networkURL, {maxZoom: 19}).addTo(map);
 
 var routeGeoJSON;
@@ -258,10 +258,10 @@ function noNetworkDetected(){
 }
 
 //First of all, I apologize for how terrible this workaround is. The purpose of this part of the code is to detect network connection so we can
-//switch to local tiles if we need to. In short, every 8 seconds we call checkNetworkMode(). This requests an image on
+//switch to local tiles if we need to. In short, every 5 seconds we call checkNetworkMode(). This requests an image on
 //a remote server, sets width/height to 0, makes it so we don't cache the image, and then insert it into the DOM. If there's a network connection
-//we'll hit the onload event in the HTML and, if we were in local mode 8 seconds previously, we'll switch to network mode. Conversely, if there's
-//no network connection and 8 seconds ago we were in network mode then we need to switch the local mode. Local and network modes just change whether
+//we'll hit the onload event in the HTML and, if we were in local mode 5 seconds previously, we'll switch to network mode. Conversely, if there's
+//no network connection and 5 seconds ago we were in network mode then we need to switch the local mode. Local and network modes just change whether
 //we pull the tiles from the internet or from the local file system.
 
 //The counter lets us append ?counter to the end of the src attribute, meaning we won't cache our images. It needs to be this way because
@@ -272,5 +272,5 @@ function checkNetworkMode(){
     counter++;
 }
 
-//Will call checkNetworkMode ever 8 seconds
-var checkNetworkConnection = window.setInterval(checkNetworkMode, 8000);
+//Will call checkNetworkMode ever 5 seconds
+var checkNetworkConnection = window.setInterval(checkNetworkMode, 5000);
