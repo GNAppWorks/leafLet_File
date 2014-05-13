@@ -272,5 +272,6 @@ function checkNetworkMode(){
     counter++;
 }
 
-//Will call checkNetworkMode ever 5 seconds
+//Will call checkNetworkMode ever 5 seconds, but call it once immediately so there isn't a 5 second delay on load
+checkNetworkMode();
 var checkNetworkConnection = window.setInterval(checkNetworkMode, 5000);
