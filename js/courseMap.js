@@ -86,8 +86,55 @@ var circle;
 var hasGottenSpeed = false;
 
 if(settings.vendors == "1"){
+    var blueIcon = L.icon({
+        iconUrl: 'js/lib/images/blue-icon.png',
+        iconRetinaUrl: 'js/lib/images/blue-icon@2x.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 21],
+        popupAnchor: [12, 0],
+        shadowUrl: 'js/lib/images/marker-shadow.png',
+        shadowRetinaUrl: 'js/lib/images/marker-shadow@2x.png',
+        shadowSize: [41, 41],
+        shadowAnchor: [12, 21]
+    });
+
+    var redIcon = L.icon({
+        iconUrl: 'js/lib/images/red-icon.png',
+        iconRetinaUrl: 'red-icon@2x.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 21],
+        popupAnchor: [12, 0],
+        shadowUrl: 'js/lib/images/marker-shadow.png',
+        shadowRetinaUrl: 'js/lib/images/marker-shadow@2x.png',
+        shadowSize: [41, 41],
+        shadowAnchor: [12, 21]
+    });
+
+    var greenIcon = L.icon({
+        iconUrl: 'js/lib/images/green-icon.png',
+        iconRetinaUrl: 'js/lib/images/green-icon@2x.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 21],
+        popupAnchor: [12, 0],
+        shadowUrl: 'js/lib/images/marker-shadow.png',
+        shadowRetinaUrl: 'js/lib/images/marker-shadow@2x.png',
+        shadowSize: [41, 41],
+        shadowAnchor: [12, 21]
+    });
+
     function onEachFeature(feature, layer) {
+                    console.log("here");
+
         if(feature.properties){
+            if(feature.properties.type == "hotel"){
+                layer.setIcon(blueIcon);
+            }
+            else if(feature.properties.type == "restaurant"){
+                layer.setIcon(redIcon);
+            }
+            else{
+                layer.setIcon(greenIcon);
+            }
             layer.bindPopup("<h1>"+feature.properties.name+"</h1><h3>"+feature.properties.address+"</h3><h4>"+feature.properties.description+"</h4>");
         }
     }
