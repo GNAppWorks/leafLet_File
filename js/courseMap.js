@@ -134,7 +134,7 @@ map.on('locationfound', onLocationFound);
 
 // Function to display an Error on location fail
 function onLocationError(e) {
-    alert(e.message);
+    console.log(e.message);
 }
 
 map.on('locationerror', onLocationError);

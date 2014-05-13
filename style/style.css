@@ -17,6 +17,9 @@ h2{
 h3{
 	display:inline;
 }
+#networkImageContainer{
+	height:0px;
+}
 .speed{
 	font-size:1.5em;
 }
