@@ -54,6 +54,98 @@ var localURL = 'data/tiles/{z}/{x}/{y}.png';
 //load base layer. default is network, if there's no network we'll eventually hit the setInterval 5 second timer and load the local tiles.
 var baseLayer = L.tileLayer(networkURL, {maxZoom: 19}).addTo(map);
 
+var routeGeoJSON;
+
+var tempE;
+if(settings.route != "-1"){
+    // load route from server
+    $.getScript('http://oxford.esrgc.org/maps/seagullcentury/data/route' + settings.route + '.js', 
+        function(){
+            routeGeoJSON = L.geoJson(route).addTo(map);
+            //This means that we've already fired the geolocation event before we had the route, so we need to fire it again
+            if(tempE != undefined){
+                onLocationFound(tempE);
+                map._onResize();
+            }
+        }
+    );
+}
+else{
+    $('#distance').hide();
+}
+
+var locateOptions = {
+    watch: true,
+    setView: false,
+    maxZoom: 16
+};
+
+//replaces setView method and sets to detected location
+
+var circle;
+var hasGottenSpeed = false;
+
+if(settings.vendors == "1"){
+    var blueIcon = L.icon({
+        iconUrl: 'js/lib/images/blue-icon.png',
+        iconRetinaUrl: 'js/lib/images/blue-icon-2x.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 21],
+        popupAnchor: [12, 0],
+        shadowUrl: 'js/lib/images/marker-shadow.png',
+        shadowRetinaUrl: 'js/lib/images/marker-shadow-2x.png',
+        shadowSize: [41, 41],
+        shadowAnchor: [12, 21]
+    });
+
+    var redIcon = L.icon({
+        iconUrl: 'js/lib/images/red-icon.png',
+        iconRetinaUrl: 'js/lib/images/red-icon-2x.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 21],
+        popupAnchor: [12, 0],
+        shadowUrl: 'js/lib/images/marker-shadow.png',
+        shadowRetinaUrl: 'js/lib/images/marker-shadow-2x.png',
+        shadowSize: [41, 41],
+        shadowAnchor: [12, 21]
+    });
+
+    var greenIcon = L.icon({
+        iconUrl: 'js/lib/images/green-icon.png',
+        iconRetinaUrl: 'js/lib/images/green-icon-2x.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 21],
+        popupAnchor: [12, 0],
+        shadowUrl: 'js/lib/images/marker-shadow.png',
+        shadowRetinaUrl: 'js/lib/images/marker-shadow-2x.png',
+        shadowSize: [41, 41],
+        shadowAnchor: [12, 21]
+    });
+
+    function onEachFeature(feature, layer) {
+                    console.log("here");
+
+        if(feature.properties){
+            if(feature.properties.type == "hotel"){
+                layer.setIcon(blueIcon);
+            }
+            else if(feature.properties.type == "restaurant"){
+                layer.setIcon(redIcon);
+            }
+            else{
+                layer.setIcon(greenIcon);
+            }
+            layer.bindPopup("<h1>"+feature.properties.name+"</h1><h3>"+feature.properties.address+"</h3><h4>"+feature.properties.description+"</h4>");
+        }
+    }
+
+    $.getScript('http://oxford.esrgc.org/maps/seagullcentury/data/vendors.js', 
+        function(){
+            L.geoJson(vendors, {onEachFeature: onEachFeature}).addTo(map);
+        }
+    );
+}
+
 // function for finding Geolocation and adding a marker to the map
 function onLocationFound(e) {
     tempE = e;
@@ -92,14 +184,22 @@ function onLocationFound(e) {
     }
     $('.speed-control').html(speedText);
 
-    //This function will add the route to the nearest rest stop to the map.
-    if(settings.route != "-1"){
-        var routeToNearestRestStop = new Route(routeGeoJSON, route, e.latlng.lng, e.latlng.lat);
-        $('#distance').html('<h2>Nearest Rest Stop - ' + routeToNearestRestStop.getGeoJSONLineDistance() + ' miles</h2>');
-        //L.geoJson(routeToNearestRestStop.getRoute(), {style: {color: "red"}}).addTo(map);
-   
+    if(typeof route != 'undefined'){
+        //This function will add the route to the nearest rest stop to the map.
+        if(settings.route != "-1"){
+            var routeToNearestRestStop = new Route(routeGeoJSON, route, e.latlng.lng, e.latlng.lat);
+            L.geoJson(routeToNearestRestStop.getRoute(), {style: {color: "red"}}).addTo(map);
+        }
+
         //This next line is for testing purposes, but it fires so frequently that it's really annoying so I'm commenting it out.
         //alert("Distance to nearest rest stop: " + routeToNearestRestStop.getGeoJSONLineDistance() + " Miles");
+        
+        if(settings.route != "-1"){
+            $('#distance').html('<h2>Nearest Rest Stop - ' + routeToNearestRestStop.getGeoJSONLineDistance() + ' miles</h2>');
+        }
+    }
+    else{
+        console.log("route is undefined, meaning that the getScript call to get the route has not succeeded yet.");
     }
 }
 
@@ -113,117 +213,17 @@ function setSpeedText(speed){
     }
 }
 
+map.on('locationfound', onLocationFound);
+
 // Function to display an Error on location fail
 function onLocationError(e) {
     console.log(e.message);
     $('#distance').html('<h2>Geolocation Error</h2>');
 }
 
-var routeGeoJSON;
+map.on('locationerror', onLocationError);
 
-var tempE;
-if(settings.route != "-1"){
-    // load route from server
-    $.getScript('http://oxford.esrgc.org/maps/seagullcentury/data/route' + settings.route + '.js', 
-        function(){
-            routeGeoJSON = L.geoJson(route).addTo(map);
-
-            map.on('locationfound', onLocationFound);
-            map.on('locationerror', onLocationError);
-            map.locate(locateOptions);
-        }
-    );
-}
-else{
-    $('#distance').hide();
-
-    map.on('locationfound', onLocationFound);
-    map.on('locationerror', onLocationError);
-    map.locate(locateOptions);
-}
-
-var locateOptions = {
-    watch: true,
-    setView: false,
-    maxZoom: 16
-};
-
-//replaces setView method and sets to detected location
-
-var circle;
-var hasGottenSpeed = false;
-
-if(settings.vendors == "1"){
-    var blueIcon = L.icon({
-        iconUrl: 'js/lib/images/blue-icon.png',
-        iconRetinaUrl: 'js/lib/images/blue-icon-2x.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 21],
-        popupAnchor: [12, 0],
-        shadowUrl: 'js/lib/images/marker-shadow.png',
-<<<<<<< HEAD
-=======
-        shadowRetinaUrl: 'js/lib/images/marker-shadow-2x.png',
->>>>>>> 24be8f82b666aa9f31c87f0159ee161030f6236a
-        shadowSize: [41, 41],
-        shadowAnchor: [12, 21]
-    });
-
-    var redIcon = L.icon({
-        iconUrl: 'js/lib/images/red-icon.png',
-<<<<<<< HEAD
-        iconRetinaUrl: 'red-icon-2x.png',
-=======
-        iconRetinaUrl: 'js/lib/images/red-icon-2x.png',
->>>>>>> 24be8f82b666aa9f31c87f0159ee161030f6236a
-        iconSize: [25, 41],
-        iconAnchor: [12, 21],
-        popupAnchor: [12, 0],
-        shadowUrl: 'js/lib/images/marker-shadow.png',
-<<<<<<< HEAD
-=======
-        shadowRetinaUrl: 'js/lib/images/marker-shadow-2x.png',
->>>>>>> 24be8f82b666aa9f31c87f0159ee161030f6236a
-        shadowSize: [41, 41],
-        shadowAnchor: [12, 21]
-    });
-
-    var greenIcon = L.icon({
-        iconUrl: 'js/lib/images/green-icon.png',
-        iconRetinaUrl: 'js/lib/images/green-icon-2x.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 21],
-        popupAnchor: [12, 0],
-        shadowUrl: 'js/lib/images/marker-shadow.png',
-<<<<<<< HEAD
-=======
-        shadowRetinaUrl: 'js/lib/images/marker-shadow-2x.png',
->>>>>>> 24be8f82b666aa9f31c87f0159ee161030f6236a
-        shadowSize: [41, 41],
-        shadowAnchor: [12, 21]
-    });
-
-    function onEachFeature(feature, layer) {
-        if(feature.properties){
-            if(feature.properties.type == "hotel"){
-                layer.setIcon(blueIcon);
-            }
-            else if(feature.properties.type == "restaurant"){
-                layer.setIcon(redIcon);
-            }
-            else{
-                layer.setIcon(greenIcon);
-            }
-            layer.bindPopup("<h1>"+feature.properties.name+"</h1><h3>"+feature.properties.address+"</h3><h4>"+feature.properties.description+"</h4>");
-        }
-    }
-
-    $.getScript('http://oxford.esrgc.org/maps/seagullcentury/data/vendors.js', 
-        function(){
-            L.geoJson(vendors, {onEachFeature: onEachFeature}).addTo(map);
-        }
-    );
-}
+map.locate(locateOptions);
 
 // Read a page's GET URL variables and return them as an associative array.
 function getUrlVars()
