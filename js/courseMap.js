@@ -161,17 +161,29 @@ if(settings.vendors == "1"){
         iconAnchor: [12, 21],
         popupAnchor: [12, 0],
         shadowUrl: 'js/lib/images/marker-shadow.png',
+<<<<<<< HEAD
+=======
+        shadowRetinaUrl: 'js/lib/images/marker-shadow-2x.png',
+>>>>>>> 24be8f82b666aa9f31c87f0159ee161030f6236a
         shadowSize: [41, 41],
         shadowAnchor: [12, 21]
     });
 
     var redIcon = L.icon({
         iconUrl: 'js/lib/images/red-icon.png',
+<<<<<<< HEAD
         iconRetinaUrl: 'red-icon-2x.png',
+=======
+        iconRetinaUrl: 'js/lib/images/red-icon-2x.png',
+>>>>>>> 24be8f82b666aa9f31c87f0159ee161030f6236a
         iconSize: [25, 41],
         iconAnchor: [12, 21],
         popupAnchor: [12, 0],
         shadowUrl: 'js/lib/images/marker-shadow.png',
+<<<<<<< HEAD
+=======
+        shadowRetinaUrl: 'js/lib/images/marker-shadow-2x.png',
+>>>>>>> 24be8f82b666aa9f31c87f0159ee161030f6236a
         shadowSize: [41, 41],
         shadowAnchor: [12, 21]
     });
@@ -183,6 +195,10 @@ if(settings.vendors == "1"){
         iconAnchor: [12, 21],
         popupAnchor: [12, 0],
         shadowUrl: 'js/lib/images/marker-shadow.png',
+<<<<<<< HEAD
+=======
+        shadowRetinaUrl: 'js/lib/images/marker-shadow-2x.png',
+>>>>>>> 24be8f82b666aa9f31c87f0159ee161030f6236a
         shadowSize: [41, 41],
         shadowAnchor: [12, 21]
     });
