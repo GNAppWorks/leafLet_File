@@ -11,7 +11,8 @@ var settings = {
     route: "0",
     speed: "1",
     vendors: "1",
-    distance: "1"
+    distance: "1",
+    waypoint: "1"
 };
 
 //Calls a function somewhere below to get the URL arguments and assign them to args (a JSON object)
@@ -47,7 +48,7 @@ var map = new L.Map('map',
 );
 
 //URL of the network tiles
-var networkURL = 'http://a.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png';
+var networkURL = 'http://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png';
 //URL of the local tiles. We've only caached zoom level 14.
 var localURL = 'data/tiles/{z}/{x}/{y}.png';
 
@@ -62,6 +63,25 @@ if(settings.route != "-1"){
     $.getScript('http://oxford.esrgc.org/maps/seagullcentury/data/route' + settings.route + '.js', 
         function(){
             routeGeoJSON = L.geoJson(route).addTo(map);
+            if(settings.waypoint == "1"){
+
+                var greenIcon = L.icon({
+                    iconUrl: 'js/lib/images/green-icon.png',
+                    iconRetinaUrl: 'js/lib/images/green-icon-2x.png',
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 21],
+                    popupAnchor: [12, 0],
+                    shadowUrl: 'js/lib/images/marker-shadow.png',
+                    shadowRetinaUrl: 'js/lib/images/marker-shadow-2x.png',
+                    shadowSize: [41, 41],
+                    shadowAnchor: [12, 21]
+                });
+
+                for(var i = 0; i < route.features.length-1; i++){
+                    console.log(route.features[i].geometry.coordinates[route.features[i].geometry.coordinates.length - 1]);
+                    L.marker([route.features[i].geometry.coordinates[route.features[i].geometry.coordinates.length - 1][1], route.features[i].geometry.coordinates[route.features[i].geometry.coordinates.length - 1][0]], {icon: greenIcon}).addTo(map);
+                }
+            }
             //This means that we've already fired the geolocation event before we had the route, so we need to fire it again
             if(tempE != undefined){
                 onLocationFound(tempE);
@@ -110,18 +130,6 @@ if(settings.vendors == "1"){
         shadowAnchor: [12, 21]
     });
 
-    var greenIcon = L.icon({
-        iconUrl: 'js/lib/images/green-icon.png',
-        iconRetinaUrl: 'js/lib/images/green-icon-2x.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 21],
-        popupAnchor: [12, 0],
-        shadowUrl: 'js/lib/images/marker-shadow.png',
-        shadowRetinaUrl: 'js/lib/images/marker-shadow-2x.png',
-        shadowSize: [41, 41],
-        shadowAnchor: [12, 21]
-    });
-
     function onEachFeature(feature, layer) {
                     console.log("here");
 
@@ -129,11 +137,8 @@ if(settings.vendors == "1"){
             if(feature.properties.type == "hotel"){
                 layer.setIcon(blueIcon);
             }
-            else if(feature.properties.type == "restaurant"){
-                layer.setIcon(redIcon);
-            }
             else{
-                layer.setIcon(greenIcon);
+                layer.setIcon(redIcon);
             }
             layer.bindPopup("<h1>"+feature.properties.name+"</h1><h3>"+feature.properties.address+"</h3><h4>"+feature.properties.description+"</h4>");
         }
@@ -145,6 +150,8 @@ if(settings.vendors == "1"){
         }
     );
 }
+
+var routeFeature;
 
 // function for finding Geolocation and adding a marker to the map
 function onLocationFound(e) {
@@ -188,7 +195,10 @@ function onLocationFound(e) {
         //This function will add the route to the nearest rest stop to the map.
         if(settings.route != "-1"){
             var routeToNearestRestStop = new Route(routeGeoJSON, route, e.latlng.lng, e.latlng.lat);
-            L.geoJson(routeToNearestRestStop.getRoute(), {style: {color: "red"}}).addTo(map);
+            if(routeFeature != null){
+                map.removeLayer(routeFeature)
+            };
+            routeFeature = L.geoJson(routeToNearestRestStop.getRoute(), {style: {color: "red"}}).addTo(map);
         }
 
         //This next line is for testing purposes, but it fires so frequently that it's really annoying so I'm commenting it out.
