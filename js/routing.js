@@ -24,6 +24,7 @@ function Route(routeGeoJSON, route, lon, lat){
 	this.findRouteIndex = function(){
 		for(var i = 0; i < this.route.features.length; i++){
 			for(var x = 0; x < this.route.features[i].geometry.coordinates.length; x++){
+				console.log(this.route.features[i].geometry.coordinates[x][0]);
 				if((this.route.features[i].geometry.coordinates[x][0] == this.closestPointOnLine[0]) && (this.route.features[i].geometry.coordinates[x][1] == this.closestPointOnLine[1])){
 					//Returns both values in the nested array as an array object
 					return new Array(i, x);
@@ -48,6 +49,7 @@ function Route(routeGeoJSON, route, lon, lat){
 		}
 		//Note this.routeIndex[0] and [1] - it's this way because findRouteIndex returns the array indicies of both features[] (to get which line segment we're utilizing)
 		//and coordinates[] (to get the lat/lon index we figured out in findRouteIndex).
+		console.log(this.routeIndex);
 		routeToNearestRestStop.geometry.coordinates = this.route.features[this.routeIndex[0]].geometry.coordinates.slice(this.routeIndex[1]);
 		return routeToNearestRestStop;
 	};
